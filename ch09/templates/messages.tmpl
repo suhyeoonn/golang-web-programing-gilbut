@@ -10,16 +10,16 @@
     <div>
         <ul></ul>
     </div>
-    <form>
+    <form id="message-form">
         <input type="text" name="message">
         <button>Send</button>
     </form>
     <script>
         var socket = null
-        function enterRoom(id) {
-            alert(id)
+        function enterRoom(roomId) {
+            alert(roomId)
 
-            if (socket !== nil) {
+            if (socket !== null) {
                 socket.close()
             }
             socket = new WebSocket(socketEndPoint + roomId)
@@ -33,7 +33,7 @@
             ul.innerHTML += message
         }
 
-        const form = document.querySelector('form')
+        const form = document.querySelector('#message-form')
         form.addEventListener('submit', (e) => {
             e.preventDefault()
             if (!form.message.value) return alert('메시지를 입력하세요')
@@ -41,8 +41,29 @@
                 console.log("error: There is no socket connection")
                 return
             }
-            // TODO socket
+            
+            waitForSocketConnection(socket, function() {
+                socket.send(JSON.stringify({
+                    "room_id": currentRoomId,
+                    "content": form.message.value
+                }))
+                form.message.value = ""
+            })
+            return false
         })
+
+        function waitForSocketConnection(socket, callback) {
+            setTimeout(() => {
+                if (socket.readyState === 1) {
+                    if (callback != null) {
+                        callback()
+                    }
+                    return
+                } else {
+                    console.log("wait for connection....")
+                }
+            }, 5)
+        }
 
     </script>
 </body>

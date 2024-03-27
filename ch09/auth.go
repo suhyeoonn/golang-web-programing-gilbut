@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	sessions "github.com/goincremental/negroni-sessions"
+	"github.com/joho/godotenv"
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/gomniauth/providers/google"
@@ -20,10 +22,18 @@ const (
 )
 
 func init() {
-	fmt.Println("auth init!!")
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	clientId := os.Getenv("CLIENT_ID")
+	clientSecret := os.Getenv("CLIENT_SECRET")
+
 	gomniauth.SetSecurityKey(authSecurityKey)
 	gomniauth.WithProviders(
-		google.New(clientID, clientSecret, "http://localhost:3000/auth/callback/google"),
+		google.New(clientId, clientSecret, "http://localhost:3000/auth/callback/google"),
 	)
 }
 

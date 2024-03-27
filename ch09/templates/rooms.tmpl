@@ -14,25 +14,36 @@
         <ul></ul>
     </div>
     <script>
-        const form = document.querySelector("form")
-        form.addEventListener("submit", (e) => {
+        var currentRoomId = null
+        
+        const roomForm = document.querySelector("form")
+        roomForm.addEventListener("submit", (e) => {
             e.preventDefault()
-            console.log(form.name.value)
+            console.log(roomForm.name.value)
 
             fetch("/rooms", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({name: form.name.value})
+                body: JSON.stringify({name: roomForm.name.value})
             })
         })
 
         fetch("/rooms").then(res => res.json()).then(data => printList(data))
 
         function printList(data) {
+            console.log(data)
             const ul = document.querySelector('ul')
-            ul.innerHTML = data.map(d => `<li>${d.name}</li>`).join('')
+            ul.innerHTML = data.map(d => `<li id="${d.id}">${d.name}</li>`).join('')
+            
+            ul.addEventListener('click', (e) => {
+                if (e.target.tagName == 'LI') {
+                    const roomId = e.target.id
+                    enterRoom(roomId)
+                    currentRoomId = roomId
+                }
+            })
         }
     </script>
 </body>
