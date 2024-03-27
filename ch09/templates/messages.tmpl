@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h4>메시지</h4>
+    <div>
+        <ul></ul>
+    </div>
+    <form>
+        <input type="text" name="message">
+        <button>Send</button>
+    </form>
+    <script>
+        var socket = null
+        function enterRoom(id) {
+            alert(id)
+
+            if (socket !== nil) {
+                socket.close()
+            }
+            socket = new WebSocket(socketEndPoint + roomId)
+            socket.onmessage = function(e) {
+                addMessage(JSON.parse(e.data))
+            }
+        }
+
+        function addMessage(message) {
+            const ul = document.querySelector('ul')
+            ul.innerHTML += message
+        }
+
+        const form = document.querySelector('form')
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+            if (!form.message.value) return alert('메시지를 입력하세요')
+            if (!socket) {
+                console.log("error: There is no socket connection")
+                return
+            }
+            // TODO socket
+        })
+
+    </script>
+</body>
+</html>

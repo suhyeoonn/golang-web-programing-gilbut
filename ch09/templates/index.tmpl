@@ -1,0 +1,12 @@
+<html>
+    <body>
+        <div>{{ template "rooms"}}</div>
+        <div>{{ template "messages"}}</div>
+        <script>
+            const socketEndPoint = "ws://{{.host}}/ws/"
+            if (!window["WebSocket"]) {
+                console.log("Error not support")
+            }
+        </script>
+    </body>
+</html>

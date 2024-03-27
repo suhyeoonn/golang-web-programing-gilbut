@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <input type="text" id="room-name" name="name">
+        <button>create room</button>
+    </form>
+    <div>
+        <ul></ul>
+    </div>
+    <script>
+        const form = document.querySelector("form")
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
+            console.log(form.name.value)
+
+            fetch("/rooms", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({name: form.name.value})
+            })
+        })
+
+        fetch("/rooms").then(res => res.json()).then(data => printList(data))
+
+        function printList(data) {
+            const ul = document.querySelector('ul')
+            ul.innerHTML = data.map(d => `<li>${d.name}</li>`).join('')
+        }
+    </script>
+</body>
+</html>
