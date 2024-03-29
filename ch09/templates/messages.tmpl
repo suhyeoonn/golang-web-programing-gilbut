@@ -8,7 +8,7 @@
 <body>
     <h4>메시지</h4>
     <div>
-        <ul></ul>
+        <ul id="message-area"></ul>
     </div>
     <form id="message-form">
         <input type="text" name="message">
@@ -24,13 +24,14 @@
             }
             socket = new WebSocket(socketEndPoint + roomId)
             socket.onmessage = function(e) {
+                console.log(e.data)
                 addMessage(JSON.parse(e.data))
             }
         }
 
         function addMessage(message) {
-            const ul = document.querySelector('ul')
-            ul.innerHTML += message
+            const ul = document.querySelector('#message-area')
+            ul.innerHTML += `<li>user: ${message.user.name}, message: ${message.content}</li>`
         }
 
         const form = document.querySelector('#message-form')

@@ -24,10 +24,13 @@ func (m *Message) create() error {
 	m.ID = bson.NewObjectId()
 	m.CreatedAt = time.Now()
 
+	fmt.Printf("왜 안돼 %+v", m)
 	c := mongoSession.Database("test").Collection("messages")
 
-	_, err := c.InsertOne(context.Background(), m)
+	result, err := c.InsertOne(context.Background(), m)
+	fmt.Println("why........", result)
 	if err != nil {
+		fmt.Println("ERR!!!!!", err)
 		return err
 	}
 	return nil
