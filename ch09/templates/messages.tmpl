@@ -18,6 +18,17 @@
         var socket = null
         function enterRoom(roomId) {
             alert(roomId)
+            fetch("/rooms/" + roomId + "/messages").then(res => res.json()).then(data => {
+                console.log("enterRoom!!", data)
+                const ul = document.querySelector('#message-area')
+                ul.innerHTML = ''
+                if (data != null) {
+                    console.log(data)
+                    for(let i = 0; i < data.length; i++) {
+                        addMessage(data[i]);
+                    }                    
+                }
+            })
 
             if (socket !== null) {
                 socket.close()

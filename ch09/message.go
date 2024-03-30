@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -37,5 +38,32 @@ func (m *Message) create() error {
 }
 
 func retrieveMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	fmt.Println("retrieveMessage")
+	// 쿼리 파라미터로 전달된 limit 값 확인
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	fmt.Println("limit: ", limit)
+	if err != nil {
+		// 정상적인 limit 값이 전달되지 않은 경우 limit를 messageFetchSize으로 셋팅
+		limit = messageFetchSize
+	}
+
+	var messages []Message
+	// TODO messages 에 담기
+	// _id 역순으로 정렬하여 limit 수만큼 message 조회
+	c := mongoSession.Database("test").Collection("messages")
+	cur, err := c.Find(context.TODO(), bson.M{"room_id": bson.ObjectIdHex(ps.ByName("id"))})
+	//.Sort("-_id").Limit(limit).All(&messages)
+	// err = c.Find(bson.M{"room_id": bson.ObjectIdHex(ps.ByName("id"))}).
+	// 	Sort("-_id").Limit(limit).All(&messages)
+	if err != nil {
+		// 오류 발생시 500 에러 리턴
+		renderer.JSON(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err = cur.All(context.TODO(), &messages); err != nil {
+		renderer.JSON(w, http.StatusInternalServerError, err)
+		return
+	}
+	// message 조회 결과 리턴
+	renderer.JSON(w, http.StatusOK, messages)
 }
